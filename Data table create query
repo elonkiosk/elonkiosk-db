@@ -1,0 +1,50 @@
+# manager 테이블
+CREATE TABLE Manager(
+manager_number INT UNSIGNED NOT NULL AUTO_INCREMENT, # 매니저 등록번호
+manager_name VARCHAR(5),			     # 매니저 이름
+manager_id VARCHAR(15) NOT NULL, 		     # 매니저 로그인 아이디
+manager_password VARCHAR(15) NOT NULL, 		     # 매니저 로그인 패스워드
+
+PRIMARY KEY(manager_number)
+);
+
+
+# Store 테이블
+CREATE TABLE Store(
+Store_id INT UNSIGNED NOT NULL AUTO_INCREMENT, # 가게 고유 아이디값
+store_name VARCHAR(40),			       # 가게 이름
+manager_number INT UNSIGNED NOT NULL,	       # 매니저 등록 번호  매니저 테이블에서 fk 값으로 받음
+location VARCHAR(80),			       # 위치
+telephone INT(11), 			       # 전번 only 번호만 중간에 '-' 없이 
+
+PRIMARY KEY(Store_id), 
+FOREIGN KEY (`manager_number`) REFERENCES Manager(`manager_number`) ON DELETE CASCADE
+);
+
+# Menu 테이블
+CREATE TABLE Menu (
+food_number INT UNSIGNED NOT NULL AUTO_INCREMENT,    # 음식 번호 고윳값
+food_category VARCHAR(10) NOT NULL, 		     # 음식 카테고리 : 메인메뉴, 사이드메뉴, 음료, 기타 
+store_id INT UNSIGNED NOT NULL, 		     # 가게 고유 아이디값  Store 테이블에서 fk로 받아옴
+food_name VARCHAR(20) NOT NULL, 		     # 음식 이름 : 통새우와퍼, 트러플 머쉬룸 와퍼, 불고기 버거)
+price INT(7) NOT NULL,	   			     # 음식 개당 단위 가격 : 와퍼 5000원
+food_pic VARCHAR(256),     			     # 사진 경로
+food_explanation VARCHAR(300),                       # 음식 설명
+
+PRIMARY KEY(food_number),
+FOREIGN KEY (`store_id`) REFERENCES Store(`Store_id`) ON DELETE CASCADE
+);
+
+
+# Order 테이블
+CREATE TABLE Orderlist (
+order_number INT UNSIGNED NOT NULL AUTO_INCREMENT,  # 주문 번호 고윳값
+order_group INT UNSIGNED,			    # 주문 그룹 -> 잘 모르겠다
+food_number VARCHAR(50) NOT NULL,   		    # 음식 이름 메뉴 테이블에서 fk로 받아옴
+quantity INT(4), 	  	   		    # 수량 4자리 9999까지 
+total_price INT(7) NOT NULL, 	   		    ### 유도된 애트리뷰트 : 메뉴 테이블의  price를 fk로 받아옴  총 가격 1000만원 미만까지
+order_date_time DATETIME, 	   		    # datetime 형식으로 기록 YYYY-MM-DD HH:MM:SS  
+						    # 시간 인서트문 'INSERT INTO Order(order_date)-> VALUES( NOW());'
+				     
+PRIMARY KEY(order_number),
+FOREIGN KEY (`food_number`) REFERENCES Menu(`food_number`) ON DELETE CASCADE);
